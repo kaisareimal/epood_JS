@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="et">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Veebipood</title>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Tere tulemast e-poodi!</h1>
+        <button id="home-button">Avaleht</button>
+        <button id="cart-button">Ostukorv</button>
+      </header>
+
+      <div id="category-menu">
+        <!-- Kategooriad lisatakse siia dünaamiliselt -->
+      </div>
+      <section id="product-list">
+        <!-- Tooted kategooria põhjal -->
+      </section>
+
+      <div id="product-detail" style="display: none">
+        <!-- Siia kuvatakse toote detailid -->
+      </div>
+
+      <aside id="cart" style="display: none">
+        <h2>Ostukorv</h2>
+        <div id="cart-items"></div>
+        <p>Kokku: <span id="total-price">0</span> €</p>
+        <button id="clear-cart">Tühjenda ostukorv</button>
+      </aside>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
