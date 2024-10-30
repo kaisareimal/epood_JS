@@ -1,79 +1,52 @@
-let cart = []; // Ostukorv kui tühi massiiv
+// cart.js
+let cart = []; // This will hold the cart items
 
+// Load cart from local storage
+export function loadCart() {
+  const storedCart = JSON.parse(localStorage.getItem("cart"));
+  cart = storedCart ? storedCart : []; // Load cart from storage
+}
+
+// Function to get the current cart
+export function getCartItems() {
+  return cart; // Return the current cart items
+}
+
+// Add to cart function
 export function addToCart(product) {
-  const cartItem = cart.find((item) => item.id === product.id);
-
-  if (cartItem) {
-    cartItem.quantity++;
+  const existingProduct = cart.find((item) => item.id === product.id);
+  if (existingProduct) {
+    existingProduct.quantity++; // Increase quantity if product already in cart
   } else {
-    cart.push({ ...product, quantity: 1 });
+    cart.push({ ...product, quantity: 1 }); // Add product to cart with quantity 1
   }
-
-  updateCartUI();
+  saveCart(); // Save cart to localStorage or wherever you manage it
 }
 
-// Eemaldab toote ostukorvist
-export function removeFromCart(productId) {
-  cart = cart.filter((item) => item.id !== productId);
-  updateCartUI();
+// Remove from cart function
+export function removeCartItem(productId) {
+  cart = cart.filter((item) => item.id !== productId); // Remove the item from the cart
+  saveCart(); // Save the updated cart
 }
 
-// Muudab toote kogust
-export function changeQuantity(productId, newQuantity) {
-  const cartItem = cart.find((item) => item.id === productId);
-
-  if (cartItem) {
-    cartItem.quantity = newQuantity;
-    if (cartItem.quantity <= 0) {
-      removeFromCart(productId);
+// Update quantity function
+export function updateCartQuantity(productId, quantity) {
+  const item = cart.find((item) => item.id === productId);
+  if (item) {
+    item.quantity = quantity; // Update the item's quantity
+    if (item.quantity <= 0) {
+      removeCartItem(productId); // Remove item if quantity is 0
     }
+    saveCart(); // Save the updated cart
   }
-
-  updateCartUI();
 }
 
-// Tühjendab ostukorvi
-export function clearCart() {
-  cart = []; // Tühjendame ostukorvi
-  updateCartUI(); // Uuendame kasutajaliidese
+// Function to calculate total price of the cart
+export function calculateTotal() {
+  return cart.reduce((total, item) => total + item.price * item.quantity, 0);
 }
 
-export function updateCartUI() {
-  const cartContainer = document.getElementById("cart-items");
-  const totalPriceSpan = document.getElementById("total-price");
-
-  cartContainer.innerHTML = ""; // Tühjendame vana sisu
-  let total = 0;
-
-  cart.forEach((item) => {
-    const itemDiv = document.createElement("div");
-    itemDiv.className = "cart-item";
-    itemDiv.innerHTML = `
-              <span>${item.name}</span>
-              <span>${item.price.toFixed(2)} € x ${item.quantity}</span>
-              <button class="remove-from-cart">Eemalda</button>
-              <input type="number" min="1" value="${item.quantity}">
-          `;
-
-    const removeButton = itemDiv.querySelector(".remove-from-cart");
-    removeButton.addEventListener("click", () => {
-      removeFromCart(item.id); // Kutsume removeFromCart
-    });
-
-    const quantityInput = itemDiv.querySelector('input[type="number"]');
-    quantityInput.addEventListener("change", (event) => {
-      const newQuantity = parseInt(event.target.value);
-      changeQuantity(item.id, newQuantity);
-    });
-
-    cartContainer.appendChild(itemDiv);
-    total += item.price * item.quantity;
-  });
-
-  totalPriceSpan.textContent = `${total.toFixed(2)} €`;
-}
-
-// Seadistab algse ostukorvi funktsionaalsuse
-export function initializeCart() {
-  updateCartUI();
+// Function to save cart
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart)); // Example using localStorage
 }

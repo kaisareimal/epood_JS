@@ -1,67 +1,89 @@
-import { fetchCategories, fetchProductsByCategory } from "./api.js";
-import { addToCart } from "./cart.js";
-import { navigate } from "./router.js";
+// categoryView.js
+import { navigateTo } from "./router.js";
+import { fetchProducts, fetchCategories } from "./api.js";
 
-export async function renderHome() {
-  // Laadime kategooriad ja kuvame need
-  await renderCategoryMenu();
-  // Sa võid siin ka teisi tegevusi teha, näiteks tooteid kuvada
-}
+export async function renderCategoryView(selectedCategory) {
+  const appDiv = document.getElementById("app");
 
-// Kategooriate kuvamine
-export async function renderCategoryMenu() {
-  const categoryMenu = document.getElementById("category-menu");
-  const categories = await fetchCategories();
+  // Fetch products and categories
+  let products = [];
+  let categories = [];
 
-  categoryMenu.innerHTML = ""; // Tühjendame menüü enne uute kategooriate lisamist
+  try {
+    products = await fetchProducts();
+    categories = await fetchCategories();
+    console.log("Fetched products:", products); // Log fetched products
+  } catch (error) {
+    console.error("Error fetching products or categories:", error);
+  }
 
-  categories.forEach((category) => {
-    const categoryItem = document.createElement("button");
-    categoryItem.className = "category-item";
-    categoryItem.textContent = category;
-    categoryItem.addEventListener("click", () => {
-      displayProductsByCategory(category); // Toote kuvamine valitud kategoorias
-    });
-    categoryMenu.appendChild(categoryItem);
-  });
-}
+  // Filter products based on the selected category
+  const filteredProducts = selectedCategory
+    ? products.filter((product) => product.category === selectedCategory)
+    : products;
 
-// Toodete kuvamine vastavalt kategooriale
-export async function displayProductsByCategory(category) {
-  const productList = document.getElementById("product-list");
-  productList.innerHTML = ""; // Tühjenda olemasolevad tooted
+  // Ensure category buttons are displayed correctly
+  const categoryButtons = categories
+    .map(
+      (category) => `
+      <button class="category-button" data-category="${category}">${category}</button>
+    `
+    )
+    .join("");
 
-  const products = await fetchProductsByCategory(category);
-
-  products.forEach((product) => {
-    const productDiv = document.createElement("div");
-    productDiv.className = "product";
-    productDiv.innerHTML = `
-      <img src="${product.image}" alt="${
-      product.title
-    }" style="cursor:pointer;">
-      <h4>${product.title}</h4>
-      <p>Hind: ${product.price.toFixed(2)} €</p>
-      <button id="add-to-cart-${
-        product.id
-      }" class="add-to-cart">Lisa ostukorvi</button>
+  appDiv.innerHTML = `
+        <header>
+            <nav>
+                <button id="home-button">Home</button>
+                <button id="cart-button">Cart</button>
+            </nav>
+            <h1>Categories</h1>
+            <nav>
+                ${categoryButtons}
+            </nav>
+        </header>
+        <div class="product-list" id="category-product-list">
+            ${filteredProducts
+              .map(
+                (product) => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" />
+                    <h3>${product.name}</h3>
+                    <p>Price: $${product.price.toFixed(2)}</p>
+                    <button class="view-details" data-id="${
+                      product.id
+                    }">View Details</button>
+                </div>
+            `
+              )
+              .join("")}
+        </div>
     `;
-    productList.appendChild(productDiv);
 
-    // Lisa sündmuse kuulaja toote pildi ja pealkirja klikiks
-    productDiv.querySelector("img").addEventListener("click", () => {
-      navigate("product-detail", product.id); // Liigu toote detailvaatesse
+  // Add event listeners for category buttons
+  const categoryButtonsElements = document.querySelectorAll(".category-button");
+  categoryButtonsElements.forEach((button) => {
+    button.addEventListener("click", () => {
+      const category = button.dataset.category;
+      navigateTo("category", category); // Navigate to the selected category
     });
-    productDiv.querySelector("h4").addEventListener("click", () => {
-      navigate("product-detail", product.id); // Liigu toote detailvaatesse
-    });
+  });
 
-    // Lisa sündmuse kuulaja ostukorvi nupule
-    const addToCartButton = document.getElementById(
-      `add-to-cart-${product.id}`
-    );
-    addToCartButton.addEventListener("click", () => {
-      addToCart(product); // Lisa toode ostukorvi
+  // Add event listeners for "View Details" buttons
+  const detailButtons = document.querySelectorAll(".view-details");
+  detailButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = parseInt(button.dataset.id);
+      navigateTo("product", productId); // Navigate to product detail view
     });
+  });
+
+  // Add event listeners for home and cart buttons
+  document.getElementById("home-button").addEventListener("click", () => {
+    navigateTo("home"); // Navigate to home view
+  });
+
+  document.getElementById("cart-button").addEventListener("click", () => {
+    navigateTo("cart"); // Navigate to cart view
   });
 }

@@ -1,59 +1,40 @@
-// Päring kategooriate saamiseks
+// api.js
+import { Product } from "./product.js"; // Ensure the correct path
+
+export async function fetchProducts() {
+  try {
+    const response = await fetch("https://fakestoreapi.com/products");
+    const data = await response.json();
+    return data.map(
+      (item) =>
+        new Product(
+          item.id,
+          item.title,
+          item.price,
+          item.image,
+          item.category,
+          item.description
+        )
+    ); // Use title for name
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+}
+
+// Fetch categories function remains unchanged
 export async function fetchCategories() {
   try {
     const response = await fetch(
       "https://fakestoreapi.com/products/categories"
     );
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
     const categories = await response.json();
+    console.log("Fetched categories:", categories); // Log the fetched categories
     return categories;
   } catch (error) {
-    console.error("Kategooriate laadimine ebaõnnestus:", error);
-    return [];
-  }
-}
-
-// Päring toodete saamiseks (kogu tootevalik)
-export async function fetchProducts() {
-  try {
-    const response = await fetch("https://fakestoreapi.com/products");
-    const products = await response.json();
-    return products;
-  } catch (error) {
-    console.error("Toodete laadimine ebaõnnestus:", error);
-    return [];
-  }
-}
-
-// Päring toodete saamiseks kindla kategooria järgi
-export async function fetchProductsByCategory(category) {
-  try {
-    const response = await fetch(
-      `https://fakestoreapi.com/products/category/${category}`
-    );
-    const products = await response.json();
-    return products;
-  } catch (error) {
-    console.error(
-      `Toodete laadimine kategooria '${category}' järgi ebaõnnestus:`,
-      error
-    );
-    return [];
-  }
-}
-
-// Päring toote saamiseks ID järgi
-export async function fetchProductById(productId) {
-  try {
-    const response = await fetch(
-      `https://fakestoreapi.com/products/${productId}`
-    );
-    if (!response.ok) {
-      throw new Error("Viga toote andmete toomisel: " + response.statusText);
-    }
-    const product = await response.json();
-    return product; // Tagasta toode
-  } catch (error) {
-    console.error("Fetch error:", error);
-    return null; // Tagasta null vigade korral
+    console.error("Error fetching categories:", error);
+    return []; // Return an empty array in case of an error
   }
 }

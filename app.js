@@ -1,43 +1,23 @@
-import {
-  renderCategoryMenu,
-  displayProductsByCategory,
-} from "./categoryView.js";
-import { initializeCart, clearCart } from "./cart.js";
-import { navigate } from "./router.js";
+// app.js
+import { fetchProducts } from "./api.js";
+import { navigateTo } from "./router.js";
+import { loadCart } from "./cart.js";
 
-function initApp() {
-  // Laadime kategooriamenüü
-  renderCategoryMenu();
+let allProducts = []; // Declare a variable to hold all products
 
-  // Kuvame esimesena näiteks kategooria "electronics" tooted
-  displayProductsByCategory("electronics");
+document.addEventListener("DOMContentLoaded", async () => {
+  loadCart(); // Load the cart on app start
+  allProducts = await fetchProducts(); // Fetch products once and store them
+  initializeNavigation();
+});
 
-  // Initsialiseerime ostukorvi
-  initializeCart();
-}
-
-// Funktsioon vahetab vaateid
-function navigateToView(view) {
-  if (view === "home") {
-    document.getElementById("product-list").style.display = "block"; // Kuvame tooted
-    document.getElementById("cart").style.display = "none"; // Peida ostukorv
-  } else if (view === "cart") {
-    document.getElementById("product-list").style.display = "none"; // Peida tooted
-    document.getElementById("cart").style.display = "block"; // Kuvame ostukorvi
+function initializeNavigation() {
+  const appDiv = document.getElementById("app");
+  if (appDiv) {
+    navigateTo("home"); // Start with the home view
+  } else {
+    console.error('Element with id "app" not found.');
   }
 }
 
-// Kinnitage nuppude sündmused
-document.getElementById("home-button").addEventListener("click", () => {
-  navigateToView("home");
-});
-
-document.getElementById("cart-button").addEventListener("click", () => {
-  navigateToView("cart");
-});
-
-// Kinnitage tühjenda ostukorv nupp
-document.getElementById("clear-cart").addEventListener("click", clearCart);
-
-// Käivitame rakenduse pärast DOM-i täielikku laadimist
-document.addEventListener("DOMContentLoaded", initApp);
+export { allProducts };
