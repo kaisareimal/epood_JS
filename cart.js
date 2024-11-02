@@ -21,7 +21,10 @@ export function addToCart(product) {
     cart.push({ ...product, quantity: 1 }); // Add product to cart with quantity 1
   }
   saveCart(); // Save cart to localStorage or wherever you manage it
+
+  alert("Product has been added to cart"); // Teavitus ostukorvi lisamisest
 }
+
 
 // Remove from cart function
 export function removeCartItem(productId) {

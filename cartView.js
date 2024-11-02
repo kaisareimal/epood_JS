@@ -13,13 +13,12 @@ export function renderCartView() {
   const total = calculateTotal();
 
   appDiv.innerHTML = `
-  <header>
-      <nav>
+      <nav class="home-buttons">
           <button id="home-button">Home</button>
-          <button id="category-button">Categories</button>
+          <button id="category-button">View Categories</button>
       </nav>
-      <h1>Your Cart</h1>
-  </header>
+      <h2>Your Cart</h2>
+
   <div class="cart-items">
       ${
         cart.length === 0
@@ -28,7 +27,7 @@ export function renderCartView() {
               .map(
                 (item) => `
               <div class="cart-item">
-                  <h3>${item.name}</h3>
+                  <h3 class="cart-title">${item.name}</h3>
                   <p>Price: $${item.price.toFixed(2)}</p>
                   <input type="number" value="${
                     item.quantity

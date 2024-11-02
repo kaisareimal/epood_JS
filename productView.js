@@ -18,20 +18,19 @@ export async function renderProductView(productId) {
   }
 
   appDiv.innerHTML = `
-        <header>
-            <nav>
+            <nav class="home-buttons">
                 <button id="home-button">Home</button>
                 <button id="cart-button">Cart</button>
             </nav>
-            <h1>${product.name}</h1>
-        </header>
+            <h2>${product.name}</h2>
         <div class="product-details">
             <img src="${product.image}" alt="${product.name}" />
-            <p>Price: $${product.price.toFixed(2)}</p>
-            <p>Description: ${product.description}</p>
+            <p class="desc">Description: ${product.description}</p>
+            <h3>Price: $${product.price.toFixed(2)}</h3>
             <button id="add-to-cart-button" data-id="${
               product.id
             }">Add to Cart</button>
+
         </div>
     `;
 

@@ -35,9 +35,6 @@ export function renderHomeView() {
   const randomProducts = getRandomProducts(allProducts, 3);
 
   appDiv.innerHTML = `
-        <header>
-            <h1>Welcome to Our E-Store</h1>
-        </header>
         <div class="home-buttons">
             <button id="category-button">View Categories</button>
             <button id="cart-button">View Cart</button>

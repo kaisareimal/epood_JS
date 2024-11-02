@@ -32,16 +32,14 @@ export async function renderCategoryView(selectedCategory) {
     .join("");
 
   appDiv.innerHTML = `
-        <header>
-            <nav>
+            <nav class="home-buttons">
                 <button id="home-button">Home</button>
-                <button id="cart-button">Cart</button>
+                <button id="cart-button">View cart</button>
             </nav>
-            <h1>Categories</h1>
-            <nav>
+            <h2>Categories</h2>
+            <nav id="categories">
                 ${categoryButtons}
             </nav>
-        </header>
         <div class="product-list" id="category-product-list">
             ${filteredProducts
               .map(
